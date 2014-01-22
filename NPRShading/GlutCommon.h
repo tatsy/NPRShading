@@ -1,6 +1,8 @@
 #ifndef _GLUT_COMMON_H_
 #define _GLUT_COMMON_H_
 
+#include <string>
+
 #include "Quaternion.hpp"
 
 // extern 変数群
@@ -18,6 +20,9 @@ extern int    mouseButton;
 extern bool   isPress;
 extern int    prevX;
 extern int    prevY;
+
+// vertexシェーダ用のファイル
+extern std::string vertFile;
 
 // Mainで定義すべきextern変数群
 extern double origin[3];

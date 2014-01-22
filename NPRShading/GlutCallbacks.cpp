@@ -2,10 +2,20 @@
 using namespace std;
 
 #include <GL/freeglut.h>
+#include "GlutInterface.h"
 #include "GlutCallbacks.h"
 #include "GlutCommon.h"
 
-void display() 
+void GlutInterface::description() 
+{
+	cout << " ** Glut Viewer **" << endl;
+	cout << "  [0] gold material (default) " << endl;
+	cout << "  [1] normal map " << endl;
+	cout << "  [2] NPR Shading by Gooch et al. 98 " << endl;
+	cout << endl;
+}
+
+void GlutInterface::display() 
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -31,7 +41,7 @@ void display()
 	glutSwapBuffers();
 }
 
-void reshape(int width, int height) 
+void GlutInterface::reshape(int width, int height) 
 {
 	glViewport(0, 0, width, height);
 
@@ -42,9 +52,26 @@ void reshape(int width, int height)
 	glMatrixMode(GL_MODELVIEW);
 }
 
-void keyboard(unsigned char key, int x, int y)
+void GlutInterface::keyboard(unsigned char key, int x, int y)
 {
 	switch(key) {
+	case '0':
+		vertFile = "glsl.vert";
+		setGlsl();
+		glutPostRedisplay();
+		break;
+	case '1':
+		vertFile = "normal.vert";
+		setGlsl();
+		glutPostRedisplay();
+		break;
+
+	case '2':
+		vertFile = "gooch.vert";
+		setGlsl();
+		glutPostRedisplay();
+		break;
+
 	case 0x1b:
 		exit(-1);
 		break;

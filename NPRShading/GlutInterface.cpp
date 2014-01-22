@@ -20,6 +20,8 @@ double modelMatrix[16] =  {0};
 double projMatrix[16]  =  {0};
 Quaternion quate;
 
+string vertFile = "glsl.vert";
+
 int    mouseButton;
 bool   isPress;
 int    prevX;
@@ -35,8 +37,6 @@ const int WIN_HEIGHT = 480;
 GLuint vShaderId;
 GLuint fShaderId;
 GLuint programId;
-
-void setupGLSL();
 
 GlutInterface::GlutInterface()
 {
@@ -81,8 +81,9 @@ GlutInterface::GlutInterface(int* argcp, char** argv)
         cerr << "Cannot use GLSL" << endl;
         exit(-1);
     }
+    setGlsl();
 
-    setupGLSL();
+	description();
 	
 	glutMainLoop();
 }
@@ -123,7 +124,7 @@ void printShaderLogInfo(GLuint shader) {
 }
 
 // setup glsl
-void setupGLSL() {
+void GlutInterface::setGlsl() {
 	GLint compiled, linked;
 
 	// get glsl version
@@ -132,7 +133,7 @@ void setupGLSL() {
 
     // vertex shader
     vShaderId = glCreateShader(GL_VERTEX_SHADER);
-    ifstream ifVert("cartoon01.vert");
+    ifstream ifVert(vertFile);
 	if(!ifVert.is_open()) {
 		cerr << "Failed to open vertex shader program !!" << endl;
 		exit(-1);
@@ -146,9 +147,9 @@ void setupGLSL() {
     glShaderSource(vShaderId, 1, &vfile, 0);
     glCompileShader(vShaderId);
 	glGetShaderiv(vShaderId, GL_COMPILE_STATUS, &compiled);
-	printShaderLogInfo(vShaderId);
 	if(compiled == GL_FALSE) {
 		cerr << "Vertex shader compile error!!" << endl;
+		printShaderLogInfo(vShaderId);
 	}
 
     // fragment shader
@@ -167,9 +168,9 @@ void setupGLSL() {
     glShaderSource(fShaderId, 1, &ffile, 0);
     glCompileShader(fShaderId);
 	glGetShaderiv(fShaderId, GL_COMPILE_STATUS, &compiled);
-	printShaderLogInfo(fShaderId);
 	if(compiled == GL_FALSE) {
 		cerr << "Fragment shader compile error!!" << endl;
+		printShaderLogInfo(fShaderId);
 	}
 
     // create program object
@@ -180,18 +181,18 @@ void setupGLSL() {
     glLinkProgram(programId);
     glGetProgramiv(programId, GL_LINK_STATUS, &linked);
 
-	GLsizei msgLen;
-	glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &msgLen);
-	if(msgLen > 0) {
-		char* logBuf = new char[msgLen];
-		GLsizei length;
-		glGetProgramInfoLog(programId, msgLen, &length, logBuf);
-		printf("%s\n", logBuf);
-		delete[] logBuf;
-	}
-
 	if(linked == GL_FALSE) {
         cerr << "Link error !!" << endl;
+
+		GLsizei msgLen;
+		glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &msgLen);
+		if(msgLen > 0) {
+			char* logBuf = new char[msgLen];
+			GLsizei length;
+			glGetProgramInfoLog(programId, msgLen, &length, logBuf);
+			printf("%s\n", logBuf);
+			delete[] logBuf;
+		}
     }
     glUseProgram(programId);
 }
