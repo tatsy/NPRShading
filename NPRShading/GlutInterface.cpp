@@ -6,9 +6,6 @@ using namespace std;
 #include "GlutCallbacks.h"
 #include "GlutCommon.h"
 
-#include <GL/glew.h>
-#include <GL/freeglut.h>
-
 // extern 変数群
 double zoom            =  1.0;
 double depth           = -50.0;
@@ -20,12 +17,17 @@ double modelMatrix[16] =  {0};
 double projMatrix[16]  =  {0};
 Quaternion quate;
 
-string vertFile = "glsl.vert";
-
 int    mouseButton;
 bool   isPress;
 int    prevX;
 int    prevY;
+
+// GLSL用プログラム
+GLuint shadeProgramId = UNDEF_PROGRAM;
+GLuint edgeProgramId  = UNDEF_PROGRAM;
+
+// 描画状態を表す変数
+bool drawEdge = false;
 
 // Mainで定義すべきextern変数群
 double origin[3] = { 0.0, 0.0, 0.0 };
@@ -49,7 +51,7 @@ GlutInterface::GlutInterface(int* argcp, char** argv)
 	glutInitWindowSize(WIN_WIDTH, WIN_HEIGHT);
 	glutCreateWindow("GLUT Interface");
 
-	glClearColor(0, 0, 0, 1);
+	glClearColor(0.5, 0.5, 0.5, 1);
 
 	// ビューの初期化
 	offset[0] = 0.0;
@@ -81,7 +83,7 @@ GlutInterface::GlutInterface(int* argcp, char** argv)
         cerr << "Cannot use GLSL" << endl;
         exit(-1);
     }
-    setGlsl();
+    shadeProgramId = setGlsl("glsl.vert", "glsl.frag");
 
 	description();
 	
@@ -124,7 +126,7 @@ void printShaderLogInfo(GLuint shader) {
 }
 
 // setup glsl
-void GlutInterface::setGlsl() {
+GLuint GlutInterface::setGlsl(string vertFile, string fragFile) {
 	GLint compiled, linked;
 
 	// get glsl version
@@ -154,7 +156,7 @@ void GlutInterface::setGlsl() {
 
     // fragment shader
     fShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-    ifstream ifFrag("glsl.frag");
+    ifstream ifFrag(fragFile);
 	if(!ifFrag.is_open()) {
 		cerr << "Failed to open fragment shader program !!" << endl;
 		exit(-1);
@@ -195,5 +197,6 @@ void GlutInterface::setGlsl() {
 		}
     }
     glUseProgram(programId);
+    return programId;
 }
 

@@ -16,13 +16,14 @@ const vec4 diffMaterial = vec4(0.8, 0.2, 0.2, 1.0);
 const vec4 specMaterial = vec4(0.7, 0.7, 0.7, 1.0);
 const float shinMaterial =  51.2;
 
+// varying variables
+varying vec3 normal;
+varying vec3 vtoL;
+
 void main(void)
 {
-	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-
-	vec3 N = normalize(gl_NormalMatrix * gl_Normal);
-	vec4 V = gl_ModelViewMatrix * gl_Vertex;
-	vec3 L = normalize(gl_LightSource[0].position.xyz - V.xyz);
+	vec3 N = normalize(normal);
+	vec3 L = normalize(vtoL);
 
     // npr
     float LdotN = dot(L, N);
@@ -43,13 +44,12 @@ void main(void)
     if(NdotL <= 0.0) {
         spec = 0.0;
     }
-	if(spec > 0.01) {
-		spec = 1.0;
-	}
     vec4 specular = spec * gl_LightSource[0].specular * specMaterial;
 
     vec4 shading = ambient + diffuse + specular;
     vec4 npr     = coolColor + warmColor;
-	gl_FrontColor  = 0.5 * shading + 0.5 * npr;
-	// gl_FrontColor = npr;
+	gl_FragColor  = shading + npr;
+    if(NdotH > 0.98) {
+        gl_FragColor.xyz = vec3(1.0, 1.0, 1.0);
+    }
 }

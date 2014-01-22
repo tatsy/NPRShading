@@ -1,10 +1,9 @@
 #include <iostream>
 using namespace std;
 
-#include <GL/freeglut.h>
+#include "GlutCommon.h"
 #include "GlutInterface.h"
 #include "GlutCallbacks.h"
-#include "GlutCommon.h"
 
 void GlutInterface::description() 
 {
@@ -30,11 +29,30 @@ void GlutInterface::display()
 	glMultMatrixd(modelMatrix);
 	gluProject(0, 0, 0, modelMatrix, projMatrix, viewport, &origin[0], &origin[1], &origin[2]);
 
+
 	glPushMatrix();
 	glScaled(zoom, zoom, zoom);
 
-	glutSolidTeapot(1.0);
-	//glutSolidSphere(1.0, 128, 128);
+    // —ÖŠs‚Ì•`‰æ
+    if(drawEdge) {
+        if(edgeProgramId == UNDEF_PROGRAM) {
+            edgeProgramId = setGlsl("edge.vert", "edge.frag");
+        } else {
+            glUseProgram(edgeProgramId);
+        }
+
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glPolygonMode(GL_FRONT, GL_LINE);
+        glutSolidTeapot(1.0);
+        glDisable(GL_CULL_FACE);
+    }
+
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonOffset(1.0, 1.0);
+    glUseProgram(shadeProgramId);
+    glutSolidTeapot(1.0);
+    glDisable(GL_POLYGON_OFFSET_FILL);
 	
 	glPopMatrix();
 
@@ -54,28 +72,38 @@ void GlutInterface::reshape(int width, int height)
 
 void GlutInterface::keyboard(unsigned char key, int x, int y)
 {
+    string vertFile = "glsl.vert";
+    string fragFile = "glsl.frag";
 	switch(key) {
 	case '0':
 		vertFile = "glsl.vert";
-		setGlsl();
-		glutPostRedisplay();
+        fragFile = "glsl.frag";
 		break;
 	case '1':
-		vertFile = "normal.vert";
-		setGlsl();
-		glutPostRedisplay();
+		vertFile = "glsl.vert";
+        fragFile = "normal.frag";
 		break;
 
 	case '2':
-		vertFile = "gooch.vert";
-		setGlsl();
-		glutPostRedisplay();
+        vertFile = "glsl.vert";
+        fragFile = "gooch.frag";
 		break;
+
+    case 'e':
+        drawEdge = !drawEdge;
+        glutPostRedisplay();
+        return;
 
 	case 0x1b:
 		exit(-1);
 		break;
+
+    default:
+        return;
 	}
+
+    shadeProgramId = setGlsl(vertFile, fragFile);
+    glutPostRedisplay();
 }
 
 void mouse(int button, int state, int x, int y) {

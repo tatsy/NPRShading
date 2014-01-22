@@ -2,7 +2,8 @@
 #define _GLUT_COMMON_H_
 
 #include <string>
-
+#include <GL/glew.h>
+#include <GL/freeglut.h>
 #include "Quaternion.hpp"
 
 // extern 変数群
@@ -21,8 +22,13 @@ extern bool   isPress;
 extern int    prevX;
 extern int    prevY;
 
-// vertexシェーダ用のファイル
-extern std::string vertFile;
+// GLSLのプログラムID
+const GLuint UNDEF_PROGRAM = 0xffff;
+extern GLuint shadeProgramId;
+extern GLuint edgeProgramId;
+
+// 描画状態を表す変数
+extern bool drawEdge;
 
 // Mainで定義すべきextern変数群
 extern double origin[3];
