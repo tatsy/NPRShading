@@ -59,6 +59,9 @@ void GlutInterface::display()
     // ハイライトの描画
     GLint uvId = glGetUniformLocation(shadeProgramId, "drawHighlight");
     glUniform1i(uvId, (GLint)drawHighlight);
+
+    // テクスチャの設定
+    glUniform1i(glGetUniformLocation(shadeProgramId, "nprTex"), 0);
     
     glutSolidTeapot(1.0);
     glDisable(GL_POLYGON_OFFSET_FILL);
@@ -96,6 +99,29 @@ void saveCurrentImageBuffer(string filename)
     delete[] pixelData;
 }
 
+void set1DShadeTex(string filename) {
+    cv::Mat tex = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
+    if(tex.empty()) {
+        cout << "Failed to load texture image file." << endl;
+        exit(-1);
+    }
+ 
+    uchar* texData = new uchar[tex.cols * 3];
+    for(int x=0; x<tex.cols; x++) {
+        for(int c=0; c<3; c++) {
+            texData[x*3+c] = tex.at<uchar>(0, x*3+(2-c));
+        }
+    }
+    GLuint texId;
+    glGenTextures(1, &texId);
+    glBindTexture(GL_TEXTURE_1D, texId);
+
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, tex.cols, 0, GL_RGB, GL_UNSIGNED_BYTE, texData);
+    delete[] texData;
+}
 
 void GlutInterface::keyboard(unsigned char key, int x, int y)
 {
@@ -120,6 +146,12 @@ void GlutInterface::keyboard(unsigned char key, int x, int y)
     case '3':
         vertFile = "glsl.vert";
         fragFile = "rademacher.frag";
+        break;
+
+    case '4':
+        vertFile = "glsl.vert";
+        fragFile = "cartoon_tex.frag";
+        set1DShadeTex("npr_shade_tex_01.png");
         break;
 
     case 'e':

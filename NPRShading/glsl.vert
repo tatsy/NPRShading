@@ -6,6 +6,8 @@ void main(void)
 {
     gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 
+    gl_TexCoord[0] = gl_MultiTexCoord0;
+
     normal = gl_NormalMatrix * gl_Normal;
     vec4 V = gl_ModelViewMatrix * gl_Vertex;
     vtoL   = gl_LightSource[0].position.xyz - V.xyz;

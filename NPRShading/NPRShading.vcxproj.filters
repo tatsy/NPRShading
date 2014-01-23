@@ -61,5 +61,8 @@
     <None Include="rademacher.frag">
       <Filter>Shader Program</Filter>
     </None>
+    <None Include="cartoon_tex.frag">
+      <Filter>Shader Program</Filter>
+    </None>
   </ItemGroup>
 </Project>

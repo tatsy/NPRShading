@@ -16,8 +16,8 @@ const vec4 k_warm = k_yell + beta  * k_diff;
 // material info
 const vec4 ambMaterial = vec4(0.5, 0.5, 0.5, 1.0);
 const vec4 diffMaterial = vec4(0.8, 0.2, 0.2, 1.0);
-const vec4 specMaterial = vec4(0.7, 0.7, 0.7, 1.0);
-const float shinMaterial =  51.2;
+const vec4 specMaterial = vec4(0.3, 0.3, 0.3, 1.0);
+const float shinMaterial =  64.0;
 
 // varying variables
 varying vec3 normal;
@@ -54,7 +54,7 @@ void main(void)
 	gl_FragColor  = shading + npr;
 
     if(drawHighlight == 1) {
-        if(NdotH > 0.97) {
+        if(NdotH > 0.98) {
             gl_FragColor.xyz = vec3(1.0, 1.0, 1.0);
         }
     }
