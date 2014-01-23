@@ -44,6 +44,7 @@ void GlutInterface::display()
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         glPolygonMode(GL_FRONT, GL_LINE);
+		glLineWidth(sqrt(zoom));
         glutSolidTeapot(1.0);
         glDisable(GL_CULL_FACE);
     }

@@ -40,22 +40,22 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="gooch.frag">
+    <None Include="glsl.frag">
       <Filter>Shader Program</Filter>
     </None>
-    <None Include="edge.vert">
+    <None Include="glsl.vert">
       <Filter>Shader Program</Filter>
     </None>
     <None Include="edge.frag">
       <Filter>Shader Program</Filter>
     </None>
+    <None Include="edge.vert">
+      <Filter>Shader Program</Filter>
+    </None>
+    <None Include="gooch.frag">
+      <Filter>Shader Program</Filter>
+    </None>
     <None Include="normal.frag">
-      <Filter>Shader Program</Filter>
-    </None>
-    <None Include="glsl.frag">
-      <Filter>Shader Program</Filter>
-    </None>
-    <None Include="glsl.vert">
       <Filter>Shader Program</Filter>
     </None>
   </ItemGroup>

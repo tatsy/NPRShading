@@ -1,5 +1,5 @@
 // npr info
-const float  b      = 0.4;
+const float  b      = 0.8;
 const float  y      = 0.4;
 const float  alpha  = 0.2;
 const float  beta   = 0.6;
@@ -49,7 +49,7 @@ void main(void)
     vec4 shading = ambient + diffuse + specular;
     vec4 npr     = coolColor + warmColor;
 	gl_FragColor  = shading + npr;
-    if(NdotH > 0.98) {
+    if(NdotH > 0.95) {
         gl_FragColor.xyz = vec3(1.0, 1.0, 1.0);
     }
 }
