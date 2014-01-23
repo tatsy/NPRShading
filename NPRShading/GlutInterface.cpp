@@ -27,7 +27,8 @@ GLuint shadeProgramId = UNDEF_PROGRAM;
 GLuint edgeProgramId  = UNDEF_PROGRAM;
 
 // •`‰æó‘Ô‚ğ•\‚·•Ï”
-bool drawEdge = false;
+bool drawEdge      = false;
+bool drawHighlight = false;
 
 // Main‚Å’è‹`‚·‚×‚«extern•Ï”ŒQ
 double origin[3] = { 0.0, 0.0, 0.0 };
@@ -71,6 +72,7 @@ GlutInterface::GlutInterface(int* argcp, char** argv)
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
 
 	glEnable(GL_NORMALIZE);
     glEnable(GL_DEPTH_TEST);

@@ -29,6 +29,7 @@ extern GLuint edgeProgramId;
 
 // •`‰æó‘Ô‚ğ•\‚·•Ï”
 extern bool drawEdge;
+extern bool drawHighlight;
 
 // Main‚Å’è‹`‚·‚×‚«extern•Ï”ŒQ
 extern double origin[3];

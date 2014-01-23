@@ -1,6 +1,8 @@
 #include <iostream>
 using namespace std;
 
+#include <opencv2/opencv.hpp>
+
 #include "GlutCommon.h"
 #include "GlutInterface.h"
 #include "GlutCallbacks.h"
@@ -19,8 +21,10 @@ void GlutInterface::display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // set light position
-    static float lightPos[] = { 5.0f, 5.0f , 5.0f, 0.0f };
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+    static float lightPos1[] = { 5.0f, 5.0f, 5.0f, 0.0f };
+    static float lightPos2[] = { -5.0f, -5.0f, 5.0f, 0.0f };
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPos1);
+    glLightfv(GL_LIGHT1, GL_POSITION, lightPos2);
 
 	// オブジェクトの描画
 	quate = quate.rotate(angle, axis[0], axis[1], axis[2]);
@@ -28,7 +32,6 @@ void GlutInterface::display()
 	glLoadIdentity();
 	glMultMatrixd(modelMatrix);
 	gluProject(0, 0, 0, modelMatrix, projMatrix, viewport, &origin[0], &origin[1], &origin[2]);
-
 
 	glPushMatrix();
 	glScaled(zoom, zoom, zoom);
@@ -52,6 +55,11 @@ void GlutInterface::display()
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1.0, 1.0);
     glUseProgram(shadeProgramId);
+
+    // ハイライトの描画
+    GLint uvId = glGetUniformLocation(shadeProgramId, "drawHighlight");
+    glUniform1i(uvId, (GLint)drawHighlight);
+    
     glutSolidTeapot(1.0);
     glDisable(GL_POLYGON_OFFSET_FILL);
 	
@@ -71,10 +79,29 @@ void GlutInterface::reshape(int width, int height)
 	glMatrixMode(GL_MODELVIEW);
 }
 
+void saveCurrentImageBuffer(string filename)
+{
+    uchar* pixelData = new uchar[WIN_WIDTH * WIN_HEIGHT * 3];
+    glReadPixels(0, 0, WIN_WIDTH, WIN_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+    
+    cv::Mat I(WIN_HEIGHT, WIN_WIDTH, CV_8UC3);
+    for(int y=0; y<WIN_HEIGHT; y++) {
+        for(int x=0; x<WIN_WIDTH; x++) {
+            for(int c=0; c<3; c++) {
+                I.at<uchar>(y, x*3+c) = pixelData[((WIN_HEIGHT-y-1)*WIN_WIDTH+x)*3+(2-c)];
+            }
+        }
+    }
+    cv::imwrite(filename, I);
+    delete[] pixelData;
+}
+
+
 void GlutInterface::keyboard(unsigned char key, int x, int y)
 {
     string vertFile = "glsl.vert";
     string fragFile = "glsl.frag";
+    string savepath;
 	switch(key) {
 	case '0':
 		vertFile = "glsl.vert";
@@ -90,9 +117,26 @@ void GlutInterface::keyboard(unsigned char key, int x, int y)
         fragFile = "gooch.frag";
 		break;
 
+    case '3':
+        vertFile = "glsl.vert";
+        fragFile = "rademacher.frag";
+        break;
+
     case 'e':
         drawEdge = !drawEdge;
         glutPostRedisplay();
+        return;
+
+    case 'h':
+        drawHighlight = !drawHighlight;
+        glutPostRedisplay();
+        return;
+
+    case 's':
+        cout << "save as: ";
+        cin >> savepath;
+        saveCurrentImageBuffer(savepath);
+        cout << "saved successfully !!" << endl;
         return;
 
 	case 0x1b:
